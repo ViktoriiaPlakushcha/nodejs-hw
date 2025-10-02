@@ -1,12 +1,33 @@
 import express from 'express';
 import 'dotenv/config';
+import cors from "cors";
+import pino from 'pino-http';
 
 
 const app = express();
 const PORT = process.env.PORT ?? 3030;
 
+app.use(express.json());
+app.use(cors());
+app.use(
+  pino({
+    level: 'info',
+    transport: {
+      target: 'pino-pretty',
+      options: {
+        colorize: true,
+        translateTime: 'HH:MM:ss',
+        ignore: 'pid,hostname',
+        messageFormat: '{req.method} {req.url} {res.statusCode} - {responseTime}ms',
+        hideObject: true,
+      },
+    },
+  }),
+);
+
 app.use((req, res, next) => {
   console.log(`Time: ${new Date().toLocaleString()}`);
+  next();
 });
 
 app.get('/notes', (req, res) => {
@@ -27,9 +48,10 @@ app.use((req, res) => {
 });
 
 app.use((err, req, res, next) => {
-  console.error('Error:', err.message);
+  console.error(err);
+  const isProd = process.env.NODE_ENV === "production";
   res.status(500).json({
-  "message": "Simulated server error"
+  message: isProd ? "Simulated server error" : err.message,
 });
 });
 
