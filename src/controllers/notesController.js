@@ -19,12 +19,10 @@ export const getAllNotes = async (req, res) => {
 
   if (search && search.trim() !== '') {
     const pattern = escapeRegExp(search.trim());
-    notesQuery.find({
-      $or: [
+    notesQuery.or([
         { title: { $regex: pattern, $options: 'i' } },
         { content: { $regex: pattern, $options: 'i' } },
-      ],
-    });
+      ]);
   }
 
   const [totalNotes, notes] = await Promise.all([
