@@ -2,8 +2,6 @@ import createHttpError from "http-errors";
 import { Note } from "../models/note.js";
 
 
-const escapeRegExp = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-
 export const getAllNotes = async (req, res) => {
   const { page = 1, perPage = 10, tag, search } = req.query;
   const pageNum = Number(page);
@@ -18,11 +16,9 @@ export const getAllNotes = async (req, res) => {
   }
 
   if (search && search.trim() !== '') {
-    const pattern = escapeRegExp(search.trim());
-    notesQuery.or([
-        { title: { $regex: pattern, $options: 'i' } },
-        { content: { $regex: pattern, $options: 'i' } },
-      ]);
+    notesQuery
+      .where({ $text: { $search: search } })
+      .sort({ score: { $meta: "textScore" } });
   }
 
   const [totalNotes, notes] = await Promise.all([
