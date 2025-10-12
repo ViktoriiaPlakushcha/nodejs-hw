@@ -31,10 +31,9 @@ export const createNoteSchema = {
     content: Joi.string().allow('').messages({
       'string.base': 'Content must be a string',
     }),
-    tag: Joi.string().valid(...TAGS).required().messages({
+    tag: Joi.string().valid(...TAGS).messages({
       'string.base': 'Tag must be a string',
       'any.only': 'Tag must be one from the list',
-      'any.required': 'Tag is required',
     }),
   }),
 };
