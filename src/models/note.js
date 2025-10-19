@@ -22,7 +22,12 @@ const noteSchema = new Schema({
       message: `Tag must be one of: ${TAGS.join(', ')}`
     },
     default: "Todo",
-  }
+  },
+  userId: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
 },
 {
   timestamps: true,
