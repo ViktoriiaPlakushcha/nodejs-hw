@@ -24,7 +24,7 @@ export const registerUser = async (req, res, next) => {
 
   setSessionCookies(res, newSession);
 
-  res.status(201).json({newUser});
+  res.status(201).json(newUser);
 };
 
 export const loginUser = async (req, res, next) => {
@@ -32,7 +32,7 @@ export const loginUser = async (req, res, next) => {
 
   const user = await User.findOne({ email });
   if (!user) {
-    return next(createHttpError(401, 'User not found'));
+    return next(createHttpError(401, 'Invalid credentials'));
   }
   const isValidPassword = await bcrypt.compare(password, user.password);
   if (!isValidPassword) {
